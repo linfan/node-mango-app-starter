@@ -5,11 +5,11 @@
 # run stop  <== Stop the daemon process
 
 PARA=${1}
-
 BASE=$(echo "${0%${0##*/}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g' )
+source ${BASE}bin/conf.inc
 source ${BASE}bin/func.inc
 
-CMD="nodemon .* WoW"
+CMD="nodemon .* ${APP_TAG}"
 EXIST=$(app_already_running "${CMD}")
 if [ "${PARA}" == "stop" ]; then
     if [ "${EXIST}" == "0" ]; then
@@ -22,11 +22,11 @@ if [ "${PARA}" == "stop" ]; then
     exit 0
 fi
 
-mkdir -p ${BASE}logs
-mkdir -p ${BASE}data
+mkdir -p ${BASE}${LOGS_FOLDER}
+mkdir -p ${BASE}${DATA_FOLDER}
 
 echo "[Step] Installing dependency..."
-NPM_LOG=${BASE}logs/npm.log
+NPM_LOG=${BASE}${LOGS_FOLDER}/npm.log
 npm install >${NPM_LOG}
 if [ "${?}" != "0" ]; then
     echo "[Error] Dependency install failed, please check ${NPM_LOG} for details."
@@ -38,27 +38,27 @@ fi
 echo "[Step] Starting mongodb..."
 EXIST=$(app_installed mongod)
 if [ "${EXIST}" == "0" ]; then
-    echo "[Error] Please install mongodb before run WoW!"
+    echo "[Error] Please install mongodb before run ${APP_TAG}!"
     exit -1
 fi
-MONGO_LOG=${BASE}logs/mongodb.log
+MONGO_LOG=${BASE}${LOGS_FOLDER}/mongodb.log
 touch ${MONGO_LOG}
 ${BASE}bin/mongodb
 
 echo "[Step] Start service..."
 EXIST=$(app_installed nodemon)
 if [ "${EXIST}" == "0" ]; then
-    echo "[Error] Please install nodemon before run WoW!"
+    echo "[Error] Please install nodemon before run ${APP_TAG}!"
     exit -1
 fi
-APP_LOG=${BASE}logs/app.log
+APP_LOG=${BASE}${LOGS_FOLDER}/app.log
 touch ${APP_LOG}
 EXIST=$(app_already_running "${CMD}")
 if [ "${PARA}" == "start" ]; then
     if [ "${EXIST}" != "0" ]; then
         echo "[Ok] App already running."
     else
-        (nodemon ${BASE}bin/www WoW >>${APP_LOG} 2>&1 &)
+        (nodemon ${BASE}bin/www ${APP_TAG} >>${APP_LOG} 2>&1 &)
         echo "[Ok] App started."
     fi
     echo "[Done] Please use \"tail -f ${APP_LOG}\" to follow the log file."

@@ -5,12 +5,12 @@
 
 APP=${0##*/}
 BASE=$(echo "${0%${APP}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g')
+source ${BASE}bin/conf.inc
 source ${BASE}bin/func.inc
 
-PORT=20000
-CMD="mongod --port ${PORT}"
-LOGFILE="${BASE}logs/mongodb.log"
-DATAFOLDER="${BASE}data"
+CMD="mongod --port ${MONGO_PORT}"
+LOGFILE="${BASE}${LOG_FOLDER}/mongodb.log"
+DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
 EXIST=$(app_already_running ${CMD})
 PARA=${1}
 if [ "${PARA}" == "stop" ]; then
@@ -23,7 +23,7 @@ if [ "${PARA}" == "stop" ]; then
     fi
 else
     if [ "${EXIST}" == "0" ]; then
-        (${CMD} --dbpath ${DATAFOLDER} --logpath ${LOGFILE} --logappend &)
+        (${CMD} --dbpath ${DATA_FOLDER_FULL} --logpath ${LOGFILE} --logappend &)
         echo "[Ok] MongoDB started. Log write to ${LOGFILE}"
     else
         echo "[Ok] MongoDB already running. Log write to ${LOGFILE}"
