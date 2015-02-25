@@ -14,10 +14,11 @@ Starter script for managing nodejs app with local mongodb
 Parameters for the application
 
 ```
-APP_TAG="App"      <== A label to distinguish the managed apps
-MONGO_PORT=20000   <== TCP port mongodb service listening on
-DATA_FOLDER="data" <== Folder to store mongodb data
-LOGS_FOLDER="logs" <== Folder to stoer log files
+APP_ENTRY="bin/www" <== Specify entry file of the application
+APP_TAG="App"       <== A label to distinguish the managed apps
+MONGO_PORT=20000    <== TCP port mongodb service listening on
+DATA_FOLDER="data"  <== Folder to store mongodb data
+LOGS_FOLDER="logs"  <== Folder to stoer log files
 ```
 
 ### run
@@ -34,6 +35,6 @@ The starter script to run and manage app using nodemon
 The starter script to run and manage mongod service for application
 
 ```
-./mongodb        <== start mongodb service for app
-./mongodb stop   <== stop mongodb service for app
+./mongodb      <== start mongodb service for app
+./mongodb stop <== stop mongodb service for app
 ```
