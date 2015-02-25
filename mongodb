@@ -1,7 +1,7 @@
 #!/bin/bash
 # Usage:
-# mongodb        <-- start mongodb service for game
-# mongodb stop   <-- stop mongodb service for game
+# mongodb        <== start mongodb service for app
+# mongodb stop   <== stop mongodb service for app
 
 APP=${0##*/}
 BASE=$(echo "${0%${APP}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g')
