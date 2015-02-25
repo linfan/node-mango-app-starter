@@ -1,3 +1,4 @@
+APP_ENTRY="bin/www"
 APP_TAG="App"
 MONGO_PORT=20000
 DATA_FOLDER="data"
