@@ -1,0 +1,71 @@
+#!/bin/bash
+# Usage:
+# run       <== Run in frontend
+# run start <== Run in background (daemon mode)
+# run stop  <== Stop the daemon process
+
+PARA=${1}
+
+BASE=$(echo "${0%${0##*/}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g' )
+source ${BASE}bin/func.inc
+
+CMD="nodemon .* WoW"
+EXIST=$(app_already_running "${CMD}")
+if [ "${PARA}" == "stop" ]; then
+    if [ "${EXIST}" == "0" ]; then
+        echo "[Ok] App already terminated."
+    else
+        PID=$(ps aux | grep "${CMD}" | grep -v grep | awk '{print $2}')
+        kill -TERM ${PID}
+        echo "[Ok] App stopped."
+    fi
+    exit 0
+fi
+
+mkdir -p ${BASE}logs
+mkdir -p ${BASE}data
+
+echo "[Step] Installing dependency..."
+NPM_LOG=${BASE}logs/npm.log
+npm install >${NPM_LOG}
+if [ "${?}" != "0" ]; then
+    echo "[Error] Dependency install failed, please check ${NPM_LOG} for details."
+    exit -1
+else
+    echo "[Ok] All dependecy installed."
+fi
+
+echo "[Step] Starting mongodb..."
+EXIST=$(app_installed mongod)
+if [ "${EXIST}" == "0" ]; then
+    echo "[Error] Please install mongodb before run WoW!"
+    exit -1
+fi
+MONGO_LOG=${BASE}logs/mongodb.log
+touch ${MONGO_LOG}
+${BASE}bin/mongodb
+
+echo "[Step] Start service..."
+EXIST=$(app_installed nodemon)
+if [ "${EXIST}" == "0" ]; then
+    echo "[Error] Please install nodemon before run WoW!"
+    exit -1
+fi
+APP_LOG=${BASE}logs/app.log
+touch ${APP_LOG}
+EXIST=$(app_already_running "${CMD}")
+if [ "${PARA}" == "start" ]; then
+    if [ "${EXIST}" != "0" ]; then
+        echo "[Ok] App already running."
+    else
+        (nodemon ${BASE}bin/www WoW >>${APP_LOG} 2>&1 &)
+        echo "[Ok] App started."
+    fi
+    echo "[Done] Please use \"tail -f ${APP_LOG}\" to follow the log file."
+else
+    if [ "${EXIST}" != "0" ]; then
+        echo "[Info] App already running in background, please use \"${BASE}bin/run stop\" terminate it."
+    else
+        nodemon ${BASE}bin/www
+    fi
+fi

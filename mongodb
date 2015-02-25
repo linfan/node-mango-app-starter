@@ -1,0 +1,31 @@
+#!/bin/bash
+# Usage:
+# mongodb        <-- start mongodb service for game
+# mongodb stop   <-- stop mongodb service for game
+
+APP=${0##*/}
+BASE=$(echo "${0%${APP}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g')
+source ${BASE}bin/func.inc
+
+PORT=20000
+CMD="mongod --port ${PORT}"
+LOGFILE="${BASE}logs/mongodb.log"
+DATAFOLDER="${BASE}data"
+EXIST=$(app_already_running ${CMD})
+PARA=${1}
+if [ "${PARA}" == "stop" ]; then
+    if [ "${EXIST}" == "0" ]; then
+        echo "[Ok] MongoDB already terminated."
+    else
+        PID=$(ps aux | grep "${CMD}" | grep -v grep | awk '{print $2}')
+        kill -TERM ${PID}
+        echo "[Ok] MongoDB stopped."
+    fi
+else
+    if [ "${EXIST}" == "0" ]; then
+        (${CMD} --dbpath ${DATAFOLDER} --logpath ${LOGFILE} --logappend &)
+        echo "[Ok] MongoDB started. Log write to ${LOGFILE}"
+    else
+        echo "[Ok] MongoDB already running. Log write to ${LOGFILE}"
+    fi
+fi
