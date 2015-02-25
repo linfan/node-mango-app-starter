@@ -9,7 +9,7 @@ source ${BASE}bin/conf.inc
 source ${BASE}bin/func.inc
 
 CMD="mongod --port ${MONGO_PORT}"
-LOGFILE="${BASE}${LOG_FOLDER}/mongodb.log"
+LOGFILE="${BASE}${LOGS_FOLDER}/mongodb.log"
 DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
 EXIST=$(app_already_running ${CMD})
 PARA=${1}

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 function app_already_running()
 {
     APP="${*}"
