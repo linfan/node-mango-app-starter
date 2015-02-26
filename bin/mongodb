@@ -4,15 +4,20 @@
 # mongodb stop   <== stop mongodb service for app
 
 APP=${0##*/}
-BASE=$(echo "${0%${APP}}../" | sed -e 's#^bin/../##g' -e 's#/bin/../#/#g')
-source ${BASE}bin/conf.inc
-source ${BASE}bin/func.inc
+APP_PATH=${0%/${APP}}
+if [ "${APP_PATH}" == "." ]; then
+    APP_PATH="$(pwd)"
+fi
+SCRIPT_FOLDER=${APP_PATH##*/}  # Script's parent folder name
+BASE=$(echo "${APP_PATH}/../" | sed -e "s#^${SCRIPT_FOLDER}/../##g" -e "s#/${SCRIPT_FOLDER}/../#/#g" -e "s#//#/#g")
+source ${BASE}${SCRIPT_FOLDER}/conf.inc
+source ${BASE}${SCRIPT_FOLDER}/func.inc
 
+PARA=${1}
 CMD="mongod --port ${MONGO_PORT}"
 LOGFILE="${BASE}${LOGS_FOLDER}/mongodb.log"
 DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
 EXIST=$(app_already_running ${CMD})
-PARA=${1}
 if [ "${PARA}" == "stop" ]; then
     if [ "${EXIST}" == "0" ]; then
         echo "[Ok] MongoDB already terminated."
