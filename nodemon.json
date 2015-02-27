@@ -5,7 +5,9 @@
   ],
   "ignore": [
     ".git",
-    "node_modules"
+    "node_modules",
+    "data",
+    "logs"
   ],
   "verbose": true,
   "execMap": {
