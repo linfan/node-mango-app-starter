@@ -30,6 +30,7 @@ fi
 
 mkdir -p ${BASE}${LOGS_FOLDER}
 mkdir -p ${BASE}${DATA_FOLDER}
+mkdir -p ${BASE}${TEST_DATA_FOLDER}
 
 echo "[Step] Installing dependency..."
 NPM_LOG=${BASE}${LOGS_FOLDER}/npm.log

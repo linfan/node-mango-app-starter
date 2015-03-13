@@ -35,6 +35,9 @@ The starter script to run and manage app using nodemon
 The starter script to run and manage mongod service for application
 
 ```
-./mongodb      <== start mongodb service for app
-./mongodb stop <== stop mongodb service for app
+./mongodb            <== start mongodb service for app
+./mongodb stop       <== stop mongodb service for app
+./mongodb test       <== stop mongodb service for test
+./mongodb stop test  <== stop mongodb service for test
+./mongodb status     <== show status of mongodb for app and test
 ```

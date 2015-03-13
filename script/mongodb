@@ -1,10 +1,14 @@
 #!/bin/bash
 # Usage:
-# mongodb        <== start mongodb service for app
-# mongodb stop   <== stop mongodb service for app
+# mongodb             <== start mongodb service for app
+# mongodb stop        <== stop mongodb service for app
+# mongodb test        <== stop mongodb service for test
+# mongodb stop test   <== stop mongodb service for test
+# mongodb status      <== show status of mongodb for app and test
 
-APP=${0##*/}
-APP_PATH=${0%/${APP}}
+APP=${0}
+APP_NAME=${0##*/}
+APP_PATH=${0%/${APP_NAME}}
 if [ "${APP_PATH}" == "." ]; then
     APP_PATH="$(pwd)"
 fi
@@ -13,24 +17,42 @@ BASE=$(echo "${APP_PATH}/../" | sed -e "s#^${SCRIPT_FOLDER}/../##g" -e "s#/${SCR
 source ${BASE}${SCRIPT_FOLDER}/conf.inc
 source ${BASE}${SCRIPT_FOLDER}/func.inc
 
-PARA=${1}
-CMD="mongod --port ${MONGO_PORT}"
-LOGFILE="${BASE}${LOGS_FOLDER}/mongodb.log"
-DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
+PARA1=${1}
+PARA2=${2}
+TEST_POSTFIX=""
+if [[ "${PARA1}" = "test" || "${PARA2}" = "test" ]]; then
+    CMD="mongod --port ${TEST_MONGO_PORT}"
+    DATA_FOLDER_FULL="${BASE}${TEST_DATA_FOLDER}"
+    LOGFILE="${BASE}${LOGS_FOLDER}/mongodb_test.log"
+    TEST_POSTFIX=" for test"
+else
+    CMD="mongod --port ${MONGO_PORT}"
+    DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
+    LOGFILE="${BASE}${LOGS_FOLDER}/mongodb.log"
+fi
 EXIST=$(app_already_running ${CMD})
-if [ "${PARA}" == "stop" ]; then
-    if [ "${EXIST}" == "0" ]; then
-        echo "[Ok] MongoDB already terminated."
+if [ "${PARA1}" = "stop" ]; then
+    if [ "${EXIST}" = "0" ]; then
+        echo "[Ok] MongoDB${TEST_POSTFIX} already terminated."
     else
         PID=$(ps aux | grep "${CMD}" | grep -v grep | awk '{print $2}')
         kill -TERM ${PID}
-        echo "[Ok] MongoDB stopped."
+        echo "[Ok] MongoDB${TEST_POSTFIX} stopped."
+    fi
+elif [ "${PARA1}" = "status" ]; then
+    if [ "${EXIST}" = "0" ]; then
+        echo "[Ok] MongoDB${TEST_POSTFIX} NOT running."
+    else
+        echo "[Ok] MongoDB${TEST_POSTFIX} IS running."
+    fi
+    if [ "${TEST_POSTFIX}" = "" ]; then
+        ${APP} status test
     fi
 else
-    if [ "${EXIST}" == "0" ]; then
+    if [ "${EXIST}" = "0" ]; then
         (${CMD} --dbpath ${DATA_FOLDER_FULL} --logpath ${LOGFILE} --logappend &)
-        echo "[Ok] MongoDB started. Log write to ${LOGFILE}"
+        echo "[Ok] MongoDB${TEST_POSTFIX} started. Log write to ${LOGFILE}"
     else
-        echo "[Ok] MongoDB already running. Log write to ${LOGFILE}"
+        echo "[Ok] MongoDB${TEST_POSTFIX} already running. Log write to ${LOGFILE}"
     fi
 fi
