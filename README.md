@@ -6,7 +6,7 @@ Starter script for managing nodejs app with local mongodb
 ## Require
 
 * [Mongodb](http://www.mongodb.org)
-* [Redis](http://redis.io/))
+* [Redis](http://redis.io/)
 * [Nodemon](http://nodemon.io)
 
 ## Usage
