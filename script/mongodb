@@ -17,6 +17,10 @@ BASE=$(echo "${APP_PATH}/../" | sed -e "s#^${SCRIPT_FOLDER}/../##g" -e "s#/${SCR
 source ${BASE}${SCRIPT_FOLDER}/conf.inc
 source ${BASE}${SCRIPT_FOLDER}/func.inc
 
+mkdir -p ${BASE}${LOGS_FOLDER}
+mkdir -p ${BASE}${DATA_FOLDER}
+mkdir -p ${BASE}${TEST_DATA_FOLDER}
+
 PARA1=${1}
 PARA2=${2}
 TEST_POSTFIX=""
@@ -30,6 +34,7 @@ else
     DATA_FOLDER_FULL="${BASE}${DATA_FOLDER}"
     LOGFILE="${BASE}${LOGS_FOLDER}/mongodb.log"
 fi
+touch ${LOGFILE}
 EXIST=$(app_already_running ${CMD})
 if [ "${PARA1}" = "stop" ]; then
     if [ "${EXIST}" = "0" ]; then

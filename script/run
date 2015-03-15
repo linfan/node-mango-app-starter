@@ -29,8 +29,6 @@ if [ "${PARA}" == "stop" ]; then
 fi
 
 mkdir -p ${BASE}${LOGS_FOLDER}
-mkdir -p ${BASE}${DATA_FOLDER}
-mkdir -p ${BASE}${TEST_DATA_FOLDER}
 
 echo "[Step] Installing dependency..."
 NPM_LOG=${BASE}${LOGS_FOLDER}/npm.log
@@ -48,9 +46,15 @@ if [ "${EXIST}" == "0" ]; then
     echo "[Error] Please install mongodb before run ${APP_TAG}!"
     exit -1
 fi
-MONGO_LOG=${BASE}${LOGS_FOLDER}/mongodb.log
-touch ${MONGO_LOG}
 ${BASE}${SCRIPT_FOLDER}/mongodb
+
+echo "[Step] Starting redis..."
+EXIST=$(app_installed redis-server)
+if [ "${EXIST}" == "0" ]; then
+    echo "[Error] Please install redis before run ${APP_TAG}!"
+    exit -1
+fi
+${BASE}${SCRIPT_FOLDER}/redis
 
 echo "[Step] Start service..."
 EXIST=$(app_installed nodemon)
